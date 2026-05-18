@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Growth Project</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: 0 auto;
+            background: #fff;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .tagline {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Balance Card */
+        .balance-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 20px;
+            padding: 25px;
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .balance-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .balance-amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .income-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .income-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .income-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .income-value {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .action-btn {
+            background: white;
+            border: 2px solid #667eea;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .action-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .action-label {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* Sections */
+        .section {
+            margin: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        /* Bank Info Display */
+        .bank-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .bank-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .bank-info-label {
+            color: #666;
+        }
+
+        .bank-info-value {
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Referral Card */
+        .referral-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+        }
+
+        .referral-code {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+        }
+
+        .copy-btn {
+            background: white;
+            color: #f5576c;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Auth Page */
+        .auth-container {
+            padding: 40px 20px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            color: #999;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        /* Admin Panel */
+        .admin-header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .request-card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .request-info {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-approve {
+            background: #4caf50;
+            color: white;
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-decline {
+            background: #f44336;
+            color: white;
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-complete {
+            background: #2196F3;
+            color: white;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                bottom: 70px;
+                opacity: 0;
+            }
+            to {
+                bottom: 90px;
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="authPage">
+            <div class="header">
+                <div class="logo">💰 Growth Project</div>
+                <div class="tagline">Your Financial Growth Partner</div>
+            </div>
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <div class="auth-tab active" onclick="switchTab('login')">Login</div>
+                    <div class="auth-tab" onclick="switchTab('signup')">Sign Up</div>
+                </div>
+
+                <div id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" id="loginPhone" class="form-input" placeholder="Enter phone number">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter password">
+                    </div>
+                    <button class="btn btn-primary" onclick="login()">Login</button>
+                </div>
+
+                <div id="signupForm" class="hidden">
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" id="signupPhone" class="form-input" placeholder="Enter phone number">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="signupPassword" class="form-input" placeholder="Create password">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Referral Code (Optional)</label>
+                        <input type="text" id="signupReferral" class="form-input" placeholder="Enter referral code">
+                    </div>
+                    <button class="btn btn-primary" onclick="signup()">Create Account</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboardPage" class="hidden">
+            <div class="header">
+                <div class="logo">💰 Growth Project</div>
+                <div class="tagline">Welcome back!</div>
+            </div>
+
+            <div class="balance-card">
+                <div class="balance-label">Account Balance</div>
+                <div class="balance-amount">₦<span id="userBalance">0.00</span></div>
+                <div class="income-row">
+                    <div class="income-item">
+                        <div class="income-label">Total Income</div>
+                        <div class="income-value">₦<span id="totalIncome">0.00</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <div class="action-btn" onclick="showSection('depositSection')">
+                    <div class="action-icon">💳</div>
+                    <div class="action-label">Deposit</div>
+                </div>
+                <div class="action-btn" onclick="showSection('withdrawSection')">
+                    <div class="action-icon">💰</div>
+                    <div class="action-label">Withdraw</div>
+                </div>
+                <div class="action-btn" onclick="showSection('referralSection')">
+                    <div class="action-icon">👥</div>
+                    <div class="action-label">Referral</div>
+                </div>
+                <div class="action-btn" onclick="showAdminPanel()">
+                    <div class="action-icon">🔐</div>
+                    <div class="action-label">Admin Panel</div>
+                </div>
+                <div class="action-btn" onclick="logout()" style="grid-column: span 2;">
+                    <div class="action-icon">🚪</div>
+                    <div class="action-label">Logout</div>
+                </div>
+            </div>
+
+            <div id="depositSection" class="section hidden">
+                <div class="section-title">💳 Make a Deposit</div>
+                <div class="form-group">
+                    <label class="form-label">Amount (₦)</label>
+                    <input type="number" id="depositAmount" class="form-input" placeholder="Enter amount">
+                </div>
+                <div class="bank-info">
+                    <div class="section-title" style="font-size: 16px; margin-bottom: 10px;">Transfer to:</div>
+                    <div class="bank-info-row">
+                        <span class="bank-info-label">Bank Name:</span>
+                        <span class="bank-info-value">First Bank</span>
+                    </div>
+                    <div class="bank-info-row">
+                        <span class="bank-info-label">Account Number:</span>
+                        <span class="bank-info-value">1234567890</span>
+                    </div>
+                    <div class="bank-info-row">
+                        <span class="bank-info-label">Account Name:</span>
+                        <span class="bank-info-value">Growth Project Ltd</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="confirmDeposit()">Confirm Payment</button>
+                <button class="btn btn-secondary" onclick="hideSection('depositSection')">Cancel</button>
+            </div>
+
+            <div id="withdrawSection" class="section hidden">
+                <div class="section-title">💰 Request Withdrawal</div>
+                <div class="form-group">
+                    <label class="form-label">Amount (₦)</label>
+                    <input type="number" id="withdrawAmount" class="form-input" placeholder="Enter amount">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bank Name</label>
+                    <input type="text" id="withdrawBank" class="form-input" placeholder="Enter bank name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Account Number</label>
+                    <input type="text" id="withdrawAccount" class="form-input" placeholder="Enter account number">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Account Name</label>
+                    <input type="text" id="withdrawName" class="form-input" placeholder="Enter account name">
+                </div>
+                <button class="btn btn-primary" onclick="requestWithdrawal()">Submit Request</button>
+                <button class="btn btn-secondary" onclick="hideSection('withdrawSection')">Cancel</button>
+            </div>
+
+            <div id="referralSection" class="section hidden">
+                <div class="referral-card">
+                    <div style="font-size: 16px; margin-bottom: 10px;">Your Referral Code</div>
+                    <div class="referral-code" id="userReferralCode">LOADING...</div>
+                    <button class="copy-btn" onclick="copyReferralCode()">📋 Copy Code</button>
+                    <div style="margin-top: 15px; font-size: 13px; opacity: 0.9;">
+                        Share this code with friends. You'll earn a bonus when they make their first deposit!
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="hideSection('referralSection')" style="margin-top: 15px;">Close</button>
+            </div>
+        </div>
+
+        <div id="adminPage" class="hidden">
+            <div class="admin-header">
+                <div style="font-size: 24px; font-weight: bold;">🔐 Admin Panel</div>
+                <button class="btn btn-secondary" onclick="showDashboard()" style="margin-top: 15px;">Back to Dashboard</button>
+            </div>
+
+            <div style="padding: 20px;">
+                <div class="section-title">Pending Deposits</div>
+                <div id="pendingDeposits"></div>
+
+                <div class="section-title" style="margin-top: 30px;">Pending Withdrawals</div>
+                <div id="pendingWithdrawals"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION - PASTE YOUR SUPABASE KEYS HERE
+        // ============================================
+        const SUPABASE_URL = 'https://rodsqnnfmgrwdlokiehm.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_GBDW_tmXOt0Uy-VY5GF7Tg_g5zrr3LF';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ============================================s
+        // STATE MANAGEMENT
+        // ============================================
+        let currentUser = null;
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function switchTab(tab) {
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('signupForm').classList.add('hidden');
+                document.querySelectorAll('.auth-tab')[0].classList.add('active');
+                document.querySelectorAll('.auth-tab')[1].classList.remove('active');
+            } else {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('signupForm').classList.remove('hidden');
+                document.querySelectorAll('.auth-tab')[0].classList.remove('active');
+                document.querySelectorAll('.auth-tab')[1].classList.add('active');
+            }
+        }
+
+        function showSection(sectionId) {
+            document.getElementById('depositSection').classList.add('hidden');
+            document.getElementById('withdrawSection').classList.add('hidden');
+            document.getElementById('referralSection').classList.add('hidden');
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        function hideSection(sectionId) {
+            document.getElementById(sectionId).classList.add('hidden');
+        }
+
+        // ============================================
+        // AUTHENTICATION FUNCTIONS
+        // ============================================
+        async function signup() {
+            const phone = document.getElementById('signupPhone').value.trim();
+            const password = document.getElementById('signupPassword').value.trim();
+            const referralCode = document.getElementById('signupReferral').value.trim();
+
+            if (!phone || !password) {
+                showToast('Please fill in all required fields');
+                return;
+            }
+
+            try {
+                const { data: codeData, error: codeError } = await supabase.rpc('generate_referral_code');
+                if (codeError) throw codeError;
+
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .insert([{
+                        phone: phone,
+                        password: password,
+                        referral_code: codeData,
+                        referred_by: referralCode || null
+                    }])
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                showToast('Account created successfully! Please login.');
+                switchTab('login');
+                document.getElementById('signupPhone').value = '';
+                document.getElementById('signupPassword').value = '';
+                document.getElementById('signupReferral').value = '';
+            } catch (error) {
+                showToast('Error: ' + error.message);
+            }
+        }
+
+        async function login() {
+            const phone = document.getElementById('loginPhone').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!phone || !password) {
+                showToast('Please enter phone and password');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('phone', phone)
+                    .eq('password', password)
+                    .maybeSingle();
+
+                if (error || !data) {
+                    showToast('Invalid credentials');
+                    return;
+                }
+
+                currentUser = data;
+                localStorage.setItem('currentUser', JSON.stringify(data));
+                showDashboard();
+            } catch (error) {
+                showToast('Error: ' + error.message);
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            document.getElementById('authPage').classList.remove('hidden');
+            document.getElementById('dashboardPage').classList.add('hidden');
+            document.getElementById('adminPage').classList.add('hidden');
+            showToast('Logged out successfully');
+        }
+
+        // ============================================
+        // DASHBOARD FUNCTIONS
+        // ============================================
+        async function showDashboard() {
+            document.getElementById('authPage').classList.add('hidden');
+            document.getElementById('dashboardPage').classList.remove('hidden');
+            document.getElementById('adminPage').classList.add('hidden');
+            await loadUserData();
+        }
+
+        async function loadUserData() {
+            if (!currentUser) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error) throw error;
+
+                currentUser = data;
+                document.getElementById('userBalance').textContent = parseFloat(data.balance).toFixed(2);
+                document.getElementById('totalIncome').textContent = parseFloat(data.total_income).toFixed(2);
+                document.getElementById('userReferralCode').textContent = data.referral_code;
+            } catch (error) {
+                showToast('Error loading data: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // DEPOSIT FUNCTIONS
+        // ============================================
+        async function confirmDeposit() {
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+
+            if (!amount || amount <= 0) {
+                showToast('Please enter a valid amount');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('deposits')
+                    .insert([{
+                        user_id: currentUser.id,
+                        amount: amount,
+                        status: 'pending'
+                    }]);
+
+                if (error) throw error;
+
+                showToast('Deposit request submitted! Waiting for admin approval.');
+                document.getElementById('depositAmount').value = '';
+                hideSection('depositSection');
+            } catch (error) {
+                showToast('Error: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // WITHDRAWAL FUNCTIONS
+        // ============================================
+        async function requestWithdrawal() {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const bankName = document.getElementById('withdrawBank').value.trim();
+            const accountNumber = document.getElementById('withdrawAccount').value.trim();
+            const accountName = document.getElementById('withdrawName').value.trim();
+
+            if (!amount || !bankName || !accountNumber || !accountName) {
+                showToast('Please fill in all fields');
+                return;
+            }
+
+            if (amount > currentUser.balance) {
+                showToast('Insufficient balance');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('withdrawals')
+                    .insert([{
+                        user_id: currentUser.id,
+                        amount: amount,
+                        bank_name: bankName,
+                        account_number: accountNumber,
+                        account_name: accountName,
+                        status: 'pending'
+                    }]);
+
+                if (error) throw error;
+
+                showToast('Withdrawal request submitted!');
+                document.getElementById('withdrawAmount').value = '';
+                document.getElementById('withdrawBank').value = '';
+                document.getElementById('withdrawAccount').value = '';
+                document.getElementById('withdrawName').value = '';
+                hideSection('withdrawSection');
+                await loadUserData();
+            } catch (error) {
+                showToast('Error: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // REFERRAL FUNCTIONS
+        // ============================================
+        function copyReferralCode() {
+            const code = document.getElementById('userReferralCode').textContent;
+            navigator.clipboard.writeText(code);
+            showToast('Referral code copied!');
+        }
+
+        // ============================================
+        // ADMIN PANEL FUNCTIONS
+        // ============================================
+        async function showAdminPanel() {
+            if (!currentUser || currentUser.phone !== 'admin') {
+                showToast('Access denied. Please log in with the phone number "admin".');
+                return;
+            }
+
+            document.getElementById('authPage').classList.add('hidden');
+            document.getElementById('dashboardPage').classList.add('hidden');
+            document.getElementById('adminPage').classList.remove('hidden');
+
+            await loadPendingRequests();
+        }
+
+        async function loadPendingRequests() {
+            try {
+                // Fetch Pending Deposits
+                const { data: deposits, error: depError } = await supabase
+                    .from('deposits')
+                    .select('*, profiles(phone, referral_code, referred_by)')
+                    .eq('status', 'pending');
+                if (depError) throw depError;
+
+                // Fetch Pending Withdrawals
+                const { data: withdrawals, error: withError } = await supabase
+                    .from('withdrawals')
+                    .select('*, profiles(phone)')
+                    .eq('status', 'pending');
+                if (withError) throw withError;
+
+                // Render Deposits
+                const depContainer = document.getElementById('pendingDeposits');
+                depContainer.innerHTML = deposits.length === 0 ? '<p>No pending deposits.</p>' : '';
+                deposits.forEach(d => {
+                    depContainer.innerHTML += `
+                        <div class="request-card">
+                            <div class="request-info">
+                                <strong>User Phone:</strong> ${d.profiles?.phone || 'Unknown'}<br>
+                                <strong>Amount:</strong> ₦${parseFloat(d.amount).toFixed(2)}
+                            </div>
+                            <div class="request-actions">
+                                <button class="btn-approve" onclick="processDeposit('${d.id}', '${d.user_id}', ${d.amount}, true)">Approve</button>
+                                <button class="btn-decline" onclick="processDeposit('${d.id}', '${d.user_id}', ${d.amount}, false)">Decline</button>
+                            </div>
+                        </div>`;
+                });
+
+                // Render Withdrawals
+                const withContainer = document.getElementById('pendingWithdrawals');
+                withContainer.innerHTML = withdrawals.length === 0 ? '<p>No pending withdrawals.</p>' : '';
+                withdrawals.forEach(w => {
+                    withContainer.innerHTML += `
+                        <div class="request-card">
+                            <div class="request-info">
+                                <strong>User Phone:</strong> ${w.profiles?.phone || 'Unknown'}<br>
+                                <strong>Amount:</strong> ₦${parseFloat(w.amount).toFixed(2)}<br>
+                                <strong>Bank Details:</strong> ${w.bank_name} - ${w.account_number} (${w.account_name})
+                            </div>
+                            <div class="request-actions">
+                                <button class="btn-complete" onclick="processWithdrawal('${w.id}', '${w.user_id}', ${w.amount}, true)">Mark Settled (Approve)</button>
+                                <button class="btn-decline" onclick="processWithdrawal('${w.id}', '${w.user_id}', ${w.amount}, false)">Decline</button>
+                            </div>
+                        </div>`;
+                });
+
+            } catch (error) {
+                showToast('Admin Load Error: ' + error.message);
+            }
+        }
+
+        async function processDeposit(depositId, userId, amount, isApproved) {
+            try {
+                const statusUpdate = isApproved ? 'approved' : 'declined';
+                
+                const { error: patchError } = await supabase
+                    .from('deposits')
+                    .update({ status: statusUpdate })
+                    .eq('id', depositId);
+                if (patchError) throw patchError;
+
+                if (isApproved) {
+                    // Fetch user account to add balance
+                    const { data: userData, error: userError } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', userId)
+                        .single();
+                    if (userError) throw userError;
+
+                    let newBalance = parseFloat(userData.balance) + amount;
+                    let newIncome = parseFloat(userData.total_income) + amount;
+
+                    // Execute profile update
+                    const { error: profileError } = await supabase
+                        .from('profiles')
+                        .update({ balance: newBalance, total_income: newIncome })
+                        .eq('id', userId);
+                    if (profileError) throw profileError;
+
+                    // Handle potential Referral Bonus
+                    if (userData.referred_by) {
+                        // Check if this is their first approved deposit ever
+                        const { data: totalApprovedDeps, error: countError } = await supabase
+                            .from('deposits')
+                            .select('id')
+                            .eq('user_id', userId)
+                            .eq('status', 'approved');
+                        
+                        if (countError) throw countError;
+
+                        if (totalApprovedDeps.length === 1) { // This means it's the exact first one
+                            const { data: referrer, error: refError } = await supabase
+                                .from('profiles')
+                                .select('*')
+                                .eq('referral_code', userData.referred_by)
+                                .maybeSingle();
+
+                            if (referrer) {
+                                const bonusAmount = 1000.00; // Set referral bonus value here
+                                await supabase
+                                    .from('profiles')
+                                    .update({ 
+                                        balance: parseFloat(referrer.balance) + bonusAmount,
+                                        total_income: parseFloat(referrer.total_income) + bonusAmount
+                                    })
+                                    .eq('id', referrer.id);
+                            }
+                        }
+                    }
+                }
+
+                showToast(`Deposit ${statusUpdate} successfully.`);
+                await loadPendingRequests();
+            } catch (error) {
+                showToast('Error processing deposit: ' + error.message);
+            }
+        }
+
+        async function processWithdrawal(withdrawalId, userId, amount, isApproved) {
+            try {
+                const statusUpdate = isApproved ? 'completed' : 'declined';
+
+                const { error: patchError } = await supabase
+                    .from('withdrawals')
+                    .update({ status: statusUpdate })
+                    .eq('id', withdrawalId);
+                if (patchError) throw patchError;
+
+                if (isApproved) {
+                    const { data: userData, error: userError } = await supabase
+                        .from('profiles')
+                        .select('balance')
+                        .eq('id', userId)
+                        .single();
+                    if (userError) throw userError;
+
+                    let newBalance = parseFloat(userData.balance) - amount;
+                    if (newBalance < 0) newBalance = 0;
+
+                    const { error: profileError } = await supabase
+                        .from('profiles')
+                        .update({ balance: newBalance })
+                        .eq('id', userId);
+                    if (profileError) throw profileError;
+                }
+
+                showToast(`Withdrawal marked as ${statusUpdate}.`);
+                await loadPendingRequests();
+            } catch (error) {
+                showToast('Error processing withdrawal: ' + error.message);
+            }
+        }
+
+        // Check persistent local storage session on initial app boot
+        window.onload = function() {
+            const cachedUser = localStorage.getItem('currentUser');
+            if (cachedUser) {
+                currentUser = JSON.parse(cachedUser);
+                showDashboard();
+            }
+        };
+    </script>
+</body>
+</html>
